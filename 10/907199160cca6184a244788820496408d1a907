@@ -1,0 +1,99 @@
+src/test/java/com/applet/mpinterface/MpInterfaceApplicationTests.java
+  s_7011714e525495::t_c0209e8a1f13b1 4,8
+README.md
+  s_7011714e525495::t_4171d229cf10b9 42
+  s_7011714e525495::t_cc5377867f46c7 33-41,43
+  s_7011714e525495::t_52bb4f02981aa3 71
+  s_7011714e525495::t_61924326a596b2 1-2,16-17,21,31,54-67,70
+  s_7011714e525495::t_c0af8921203f79 3-15,18-20,22-30,32,44-53,68-69,72-88
+src/main/java/com/applet/mpinterface/framework/GenerationResult.java
+  s_7011714e525495::t_c652205d2779f8 3-4,6,11,15-16,18,21-22
+  s_7011714e525495::t_27c12ddd81d22d 1-2,5,7-10,12-14,17,19-20,23-25
+.github/workflows/ci.yml
+  s_7011714e525495::t_c0af8921203f79 1-20
+src/main/java/com/applet/mpinterface/framework/ConsumerProjectGenerator.java
+  s_7011714e525495::t_c652205d2779f8 10-11,14-15,30-33,36-39,60-69,75-76,86,88,94-120,126-147
+  s_7011714e525495::t_27c12ddd81d22d 1-9,12-13,16-18,20-29,34-35,40-51,54-59,77-85,87,89-93,148-155
+  s_7011714e525495::t_ffa0d5ea7f7071 70-74,121-125
+  s_7011714e525495::t_0aed42b70c4f37 19,53
+  s_7011714e525495::t_d25f96756d4b84 52
+pom.xml
+  s_7011714e525495::t_c0209e8a1f13b1 12,14-15
+src/main/java/com/applet/mpinterface/Request/CodeRequest.java
+  s_7011714e525495::t_c0209e8a1f13b1 3,10-11
+src/test/java/com/applet/mpinterface/mapper/AppletinfoMapperTest.java
+  s_7011714e525495::t_c0209e8a1f13b1 8,19
+src/main/resources/templates/con_main_template.ftl
+  s_7011714e525495::t_7720ec2f7841f2 1,8,16
+src/test/java/com/applet/mpinterface/service/IRundetailsServiceTest.java
+  s_7011714e525495::t_c0209e8a1f13b1 6,20
+src/main/resources/templates/yaml_template.ftl
+  s_7011714e525495::t_a243e99b7f622b 2-7,9-13,15-16,19,21,27
+src/main/resources/templates/con_pom_template.ftl
+  s_7011714e525495::t_c0209e8a1f13b1 15,24
+.env.example
+  s_7011714e525495::t_27c12ddd81d22d 1-4
+src/main/resources/application.yaml
+  s_7011714e525495::t_c98dae5b3cb5fc 2-6,8-9
+.gitignore
+  s_7011714e525495::t_27c12ddd81d22d 1-6
+src/test/java/com/applet/mpinterface/framework/ConsumerProjectGeneratorTest.java
+  s_7011714e525495::t_9a4a1ba9c4552e 73-75,77-83
+  s_7011714e525495::t_ffa0d5ea7f7071 138-140
+  s_7011714e525495::t_cc5377867f46c7 166-180
+  s_7011714e525495::t_fd33bf5fcc5f38 60
+  s_7011714e525495::t_b89391d77f4f57 1-2,4-9,17-18,20-21,25,30-59,61-72,181
+  s_7011714e525495::t_99e7ce40b4560f 19,134,156-157
+  s_7011714e525495::t_e246e50dbca57e 10-16,96-97,101-102,104-126,141-143,147,152-155
+  s_7011714e525495::t_c652205d2779f8 3,127-133,135-137
+  s_7011714e525495::t_946df80fe05acb 76
+  s_7011714e525495::t_d25f96756d4b84 84-92,165
+  s_7011714e525495::t_610ea6eda94499 22-24,26-29,93-95,144-146,148-151,158-164
+  s_7011714e525495::t_1ef47faace5663 98-100,103
+src/main/resources/templates/pom_template.ftl
+  s_7011714e525495::t_e89d29a432eb1a 15,24
+src/main/java/com/applet/mpinterface/framework/ConsumerGenerator.java
+  s_7011714e525495::t_c0209e8a1f13b1 30
+  s_7011714e525495::t_7720ec2f7841f2 5,14,20,22-24,27-29,31
+  s_7011714e525495::t_610ea6eda94499 8-9,11,15,34-37
+src/main/resources/templates/con_yaml_template.ftl
+  s_7011714e525495::t_7720ec2f7841f2 1-2,5,8
+src/main/resources/templates/consumer_controller_template.ftl
+  s_7011714e525495::t_7720ec2f7841f2 1
+src/main/java/com/applet/mpinterface/framework/GeneratorCli.java
+  s_7011714e525495::t_cc5377867f46c7 1-26
+examples/consumer-method.java.txt
+  s_7011714e525495::t_cc5377867f46c7 1-4
+.github/ISSUE_TEMPLATE/bug.yml
+  s_7011714e525495::t_b5b5e0311090ad 1-45
+.github/ISSUE_TEMPLATE/config.yml
+  s_7011714e525495::t_2b6f1c359fa332 1-5
+.github/ISSUE_TEMPLATE/documentation.yml
+  s_7011714e525495::t_2c1beabb6e2392 1-23
+.github/ISSUE_TEMPLATE/feature.yml
+  s_7011714e525495::t_f943d803709fb0 1-29
+.github/pull_request_template.md
+  s_7011714e525495::t_b36e8b8f935fb4 1-24
+CONTRIBUTING.md
+  s_7011714e525495::t_b29697bb2743b3 1-23
+SECURITY.md
+  s_7011714e525495::t_abdda4074badb1 1-13
+assets/hero.svg
+  s_7011714e525495::t_64d6339883ca88 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "10907199160cca6184a244788820496408d1a907",
+  "prompts": {},
+  "sessions": {
+    "s_7011714e525495": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12529-718f-7053-849a-2fa10f2720ee",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "恺撒 <weihaodong@xiaohongshu.com>"
+    }
+  }
+}
