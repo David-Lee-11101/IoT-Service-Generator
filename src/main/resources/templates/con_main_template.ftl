@@ -1,11 +1,11 @@
-package com.${appletName}.mpinterface;
+package com.${packageName}.mpinterface;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"spring.reference","com.${appletName}.mpinterface.controller","spring.annotation"})
+@ComponentScan(basePackages = {"spring.reference","com.${packageName}.mpinterface.controller","spring.annotation"})
 
 public class MpInterfaceApplication {
 

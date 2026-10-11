@@ -1,4 +1,4 @@
-package com.${appletName}.mpinterface.controller;
+package com.${packageName}.mpinterface.controller;
 
 import iotruleservice.*;
 import org.springframework.beans.factory.annotation.Autowired;
