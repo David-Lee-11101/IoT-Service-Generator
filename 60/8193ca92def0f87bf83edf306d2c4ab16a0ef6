@@ -1,0 +1,21 @@
+src/main/resources/templates/con_pom_template.ftl
+  s_7011714e525495::t_f622a0531c8d91 30,36,42
+src/main/resources/templates/pom_template.ftl
+  s_7011714e525495::t_f622a0531c8d91 30,36,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "608193ca92def0f87bf83edf306d2c4ab16a0ef6",
+  "prompts": {},
+  "sessions": {
+    "s_7011714e525495": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12529-718f-7053-849a-2fa10f2720ee",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "David Lee <109534658+David-Lee-11101@users.noreply.github.com>"
+    }
+  }
+}
