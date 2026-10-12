@@ -80,7 +80,10 @@ Copy `.env.example` into your own untracked environment configuration. Database 
 
 - Generated consumer projects reference adjacent RPC suite modules and are not standalone applications until those dependencies are published or installed locally.
 - `javaCode` is emitted as source text. This project does not compile or execute it, and callers must treat generated source as untrusted until reviewed.
-- Provider generation now validates Java identifiers, confines every output below the caller-owned root, rejects symbolic-link segments, renders in memory, writes atomically, and propagates failures. It remains a metadata-bound historical adapter; the typed provider generator under SmartHome Integrated Logic Management is the maintained path.
+- Provider generation validates the applet class name and every database-derived method
+  label before rendering, rejects duplicate/capitalization-colliding method names,
+  and renders lookup labels as escaped Java string literals. It confines every output below the caller-owned root, rejects symbolic-link segments, renders in memory, writes atomically, and propagates failures. Filesystems without atomic moves fail closed;
+  the historical adapter publishes individual files, not a whole-project transaction. It remains a metadata-bound historical adapter; the typed provider generator under SmartHome Integrated Logic Management is the maintained path.
 - The repository has no release or compatibility guarantee yet.
 
 ## License status

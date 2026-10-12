@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -25,6 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import javax.lang.model.SourceVersion;
 
 @Service
 public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundetails> implements ISpecificGenerator {
@@ -74,7 +76,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("ingredients");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Trigger");
@@ -96,7 +98,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("ingredients");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Filter");
@@ -117,7 +119,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("ingredients");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Delay");
@@ -140,7 +142,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         // 遍历数组，提取每个对象的 label 值
                         if (ingredientsArray != null) {
                             for (JsonNode ingredient : ingredientsArray) {
-                                String label = ingredient.get("label").asText();
+                                String label = labelOf(ingredient);
                                 Map<String, String> field = new HashMap<>();
                                 field.put("name", label);
                                 field.put("type", "Query");
@@ -154,7 +156,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         if (query_ingredientsArray != null) {
                             for (JsonNode outer_ingredient : query_ingredientsArray) {
                                 for (JsonNode ingredient : outer_ingredient) {
-                                    String label = ingredient.get("label").asText();
+                                    String label = labelOf(ingredient);
                                     Map<String, String> field = new HashMap<>();
                                     field.put("name", label);
                                     field.put("type", "Query");
@@ -180,7 +182,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("action_fields");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Action");
@@ -191,7 +193,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
 //                        JsonNode unfiltered_action_fields = element.get("action_fields");
 //                        // 遍历数组，提取每个对象的 label 值
 //                        for (JsonNode ingredient : unfiltered_action_fields) {
-//                            String label = ingredient.get("label").asText();
+//                            String label = labelOf(ingredient);
 //                            fieldsList.add(Map.of("name", label,"type","Action"));
 //                            System.out.println("Label: " + label);
 //                        }
@@ -200,6 +202,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                 }
             }
 
+            validateFields(fieldsList);
             dataModel.put("fields", fieldsList);
             dataModel.put("appletName", appletName);
             System.out.println(fieldsList);
@@ -223,6 +226,35 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
         }
     }
 
+    private static String labelOf(JsonNode ingredient) {
+        JsonNode label = ingredient == null ? null : ingredient.get("label");
+        if (label == null || !label.isTextual()) throw new IllegalArgumentException("label must be a string");
+        String value = label.asText();
+        if (!value.matches("[A-Za-z_$][A-Za-z0-9_$]{0,63}")
+                || !SourceVersion.isIdentifier(value) || SourceVersion.isKeyword(value)) {
+            throw new IllegalArgumentException("label must be a bounded Java method identifier");
+        }
+        return value;
+    }
+
+    private static void validateFields(List<Map<String, String>> fields) {
+        Set<String> methods = new HashSet<>();
+        Set<String> getters = new HashSet<>();
+        for (Map<String, String> field : fields) {
+            String name = field.get("name");
+            String getter = "select" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            if (!methods.add(name) || !getters.add(getter)) {
+                throw new IllegalArgumentException("labels produce duplicate Java methods");
+            }
+            field.put("literal", javaLiteral(name));
+        }
+    }
+
+    private static String javaLiteral(String value) {
+        return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("\r", "\\r").replace("\n", "\\n").replace("\t", "\\t") + "\"";
+    }
+
     private static void requireIdentifier(String value, String field) {
         if (value == null || !value.matches("[A-Z][A-Za-z0-9]{0,63}")) {
             throw new IllegalArgumentException(field + " must be a Java class identifier");
@@ -241,7 +273,15 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
         return writer.toString();
     }
 
+    interface AtomicMover {
+        void move(Path source, Path destination) throws IOException;
+    }
+
     private static void writeAtomic(Path root, Path target, String value) throws IOException {
+        writeAtomic(root, target, value, (source, destination) -> Files.move(source, destination, StandardCopyOption.ATOMIC_MOVE));
+    }
+
+    static void writeAtomic(Path root, Path target, String value, AtomicMover mover) throws IOException {
         Files.createDirectories(target.getParent());
         Path current = root;
         for (Path segment : root.relativize(target.getParent())) {
@@ -251,11 +291,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
         Path temporary = Files.createTempFile(target.getParent(), ".generated-", ".tmp");
         try {
             Files.write(temporary, value.getBytes(StandardCharsets.UTF_8));
-            try {
-                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE);
-            } catch (AtomicMoveNotSupportedException unsupported) {
-                Files.move(temporary, target);
-            }
+            mover.move(temporary, target);
         } finally {
             Files.deleteIfExists(temporary);
         }
