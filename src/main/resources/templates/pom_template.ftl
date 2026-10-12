@@ -27,19 +27,19 @@
         </dependency>
 
         <dependency>
-            <groupId>com.seu</groupId>
+            <groupId>io.smarthome</groupId>
             <artifactId>rpc-common-interface</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.seu</groupId>
+            <groupId>io.smarthome</groupId>
             <artifactId>rpc-common-registry</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.seu</groupId>
+            <groupId>io.smarthome</groupId>
             <artifactId>rpc-common-protocol</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
