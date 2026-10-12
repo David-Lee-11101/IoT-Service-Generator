@@ -1,0 +1,28 @@
+pom.xml
+  s_7011714e525495::t_cbbefa0b0a8d9c 23-28
+  s_7011714e525495::t_e08eca1821dc11 16-22
+README.md
+  s_7011714e525495::t_cbbefa0b0a8d9c 83,88
+docs/research/legacy-local-process-experiment.md
+  s_7011714e525495::t_a27db67d14715b 1-17
+src/main/java/com/applet/mpinterface/service/impl/SpecificGeneratorImpl.java
+  s_7011714e525495::t_a5a0403cfad8fb 15-23,36,45-47,206-220,222-260
+RIGHTS.md
+  s_7011714e525495::t_0d0300df8ba09d 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "2d861b798306ce46ee724089fabd8e93383e238a",
+  "prompts": {},
+  "sessions": {
+    "s_7011714e525495": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12529-718f-7053-849a-2fa10f2720ee",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "David Lee <109534658+David-Lee-11101@users.noreply.github.com>"
+    }
+  }
+}
