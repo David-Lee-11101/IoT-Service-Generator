@@ -80,9 +80,9 @@ Copy `.env.example` into your own untracked environment configuration. Database 
 
 - Generated consumer projects reference adjacent RPC suite modules and are not standalone applications until those dependencies are published or installed locally.
 - `javaCode` is emitted as source text. This project does not compile or execute it, and callers must treat generated source as untrusted until reviewed.
-- Provider generation and database-derived detail generation remain legacy paths and need the same sandbox boundary before public API exposure.
+- Provider generation now validates Java identifiers, confines every output below the caller-owned root, rejects symbolic-link segments, renders in memory, writes atomically, and propagates failures. It remains a metadata-bound historical adapter; the typed provider generator under SmartHome Integrated Logic Management is the maintained path.
 - The repository has no release or compatibility guarantee yet.
 
 ## License status
 
-No open-source license has been selected. Copyright remains with the repository owner until a license file is added.
+No open-source license has been selected. `RIGHTS.md` records the source-visible, no-reuse-grant status and preserves GitHub platform permissions and third-party rights.
