@@ -12,13 +12,21 @@ import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import javax.lang.model.SourceVersion;
 
 @Service
 public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundetails> implements ISpecificGenerator {
@@ -27,9 +35,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
 
     @Override
     public void generateAllDetailgetterCode(String id, Integer actionTime, String path, String appletName) {
-        // 模板文件路径
-        String impltemplatePath = "src/main/templates/detailinfo_impl_template.ftl";
-        String servicetemplatePath = "src/main/templates/detailinfo_service_template.ftl";
+        requireIdentifier(appletName, "appletName");
 
         //获取到对应条的执行记录，从而获得各个json中的数据
         QueryWrapper<Rundetails> queryWrapper = new QueryWrapper<>();
@@ -38,6 +44,9 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
 //      queryWrapper.eq("id", id).orderByDesc("action_time").last("LIMIT 1");
 
         Rundetails rundetails = rundetailsMapper.selectOne(queryWrapper);
+        if (rundetails == null) {
+            throw new IllegalArgumentException("No execution detail matches the requested id and action time");
+        }
         // 使用 Jackson 的 ObjectMapper 来处理 JSON
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -67,7 +76,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("ingredients");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Trigger");
@@ -89,7 +98,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("ingredients");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Filter");
@@ -110,7 +119,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("ingredients");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Delay");
@@ -133,7 +142,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         // 遍历数组，提取每个对象的 label 值
                         if (ingredientsArray != null) {
                             for (JsonNode ingredient : ingredientsArray) {
-                                String label = ingredient.get("label").asText();
+                                String label = labelOf(ingredient);
                                 Map<String, String> field = new HashMap<>();
                                 field.put("name", label);
                                 field.put("type", "Query");
@@ -147,7 +156,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         if (query_ingredientsArray != null) {
                             for (JsonNode outer_ingredient : query_ingredientsArray) {
                                 for (JsonNode ingredient : outer_ingredient) {
-                                    String label = ingredient.get("label").asText();
+                                    String label = labelOf(ingredient);
                                     Map<String, String> field = new HashMap<>();
                                     field.put("name", label);
                                     field.put("type", "Query");
@@ -173,7 +182,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                         JsonNode ingredientsArray = element.get("action_fields");
                         // 遍历数组，提取每个对象的 label 值
                         for (JsonNode ingredient : ingredientsArray) {
-                            String label = ingredient.get("label").asText();
+                            String label = labelOf(ingredient);
                             Map<String, String> field = new HashMap<>();
                             field.put("name", label);
                             field.put("type", "Action");
@@ -184,7 +193,7 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
 //                        JsonNode unfiltered_action_fields = element.get("action_fields");
 //                        // 遍历数组，提取每个对象的 label 值
 //                        for (JsonNode ingredient : unfiltered_action_fields) {
-//                            String label = ingredient.get("label").asText();
+//                            String label = labelOf(ingredient);
 //                            fieldsList.add(Map.of("name", label,"type","Action"));
 //                            System.out.println("Label: " + label);
 //                        }
@@ -193,44 +202,98 @@ public class SpecificGeneratorImpl extends ServiceImpl<RundetailsMapper, Rundeta
                 }
             }
 
+            validateFields(fieldsList);
             dataModel.put("fields", fieldsList);
             dataModel.put("appletName", appletName);
             System.out.println(fieldsList);
-            // 输出文件路径//需要拼接路径也就是文件名,根据ingredients中具体内容生成所有的detail get的java文件
-            //前面半截用变量path替换，可变的生成路径
-            String impl_outputPath = path + "/service/impl/" + "SpecificServiceImpl.java";
-            String service_outputPath = path + "/service/ISpecificService.java";
-            String rimpl_outputPath = path + "/service/impl/" + appletName + "ServiceImpl.java";
-            // String rservice_outputPath = path + "/service/I"+appletName+"Service.java";
-            //改为放入interface接口中
-            String rservice_outputPath = "D:/preStage/IoTRPC/IoT-RPC-Framework/rpc-common-interface/src/main/java/iotruleservice/I" + appletName + "Service.java";
-            String controller_outputPath = path + "/controller/SpecificController.java";
-            // 创建目录（如果不存在）
-            new File(impl_outputPath).getParentFile().mkdirs();
-            new File(service_outputPath).getParentFile().mkdirs();
-            new File(rimpl_outputPath).getParentFile().mkdirs();
-            new File(rservice_outputPath).getParentFile().mkdirs();
-            new File(controller_outputPath).getParentFile().mkdirs();
-            // 创建 Writer，用于写入生成的 Java 文件
-            Writer impl_writer = new FileWriter(impl_outputPath);
-            Writer service_writer = new FileWriter(service_outputPath);
-            Writer rimpl_writer = new FileWriter(rimpl_outputPath);
-            Writer rservice_writer = new FileWriter(rservice_outputPath);
-            Writer controller_writer = new FileWriter(controller_outputPath);
-            // 填充模板并生成文件
-            impl_template.process(dataModel, impl_writer);
-            service_template.process(dataModel, service_writer);
-            rimpl_template.process(dataModel, rimpl_writer);
-            rservice_template.process(dataModel, rservice_writer);
-            controller_template.process(dataModel, controller_writer);
-            // 关闭 Writer
-            impl_writer.close();
-            service_writer.close();
-            rimpl_writer.close();
-            rservice_writer.close();
-            System.out.println("Java file generated successfully at: " + impl_outputPath + " and " + service_outputPath);
+            Path outputRoot = Paths.get(path).toAbsolutePath().normalize();
+            Files.createDirectories(outputRoot);
+            if (Files.isSymbolicLink(outputRoot)) {
+                throw new IllegalArgumentException("output root cannot be a symbolic link");
+            }
+            outputRoot = outputRoot.toRealPath(LinkOption.NOFOLLOW_LINKS);
+            Map<Path, String> rendered = new HashMap<>();
+            rendered.put(confined(outputRoot, "service/impl/SpecificServiceImpl.java"), render(impl_template, dataModel));
+            rendered.put(confined(outputRoot, "service/ISpecificService.java"), render(service_template, dataModel));
+            rendered.put(confined(outputRoot, "service/impl/" + appletName + "ServiceImpl.java"), render(rimpl_template, dataModel));
+            rendered.put(confined(outputRoot, "iotruleservice/I" + appletName + "Service.java"), render(rservice_template, dataModel));
+            rendered.put(confined(outputRoot, "controller/SpecificController.java"), render(controller_template, dataModel));
+            for (Map.Entry<Path, String> file : rendered.entrySet()) {
+                writeAtomic(outputRoot, file.getKey(), file.getValue());
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Provider source generation failed", e);
+        }
+    }
+
+    private static String labelOf(JsonNode ingredient) {
+        JsonNode label = ingredient == null ? null : ingredient.get("label");
+        if (label == null || !label.isTextual()) throw new IllegalArgumentException("label must be a string");
+        String value = label.asText();
+        if (!value.matches("[A-Za-z_$][A-Za-z0-9_$]{0,63}")
+                || !SourceVersion.isIdentifier(value) || SourceVersion.isKeyword(value)) {
+            throw new IllegalArgumentException("label must be a bounded Java method identifier");
+        }
+        return value;
+    }
+
+    private static void validateFields(List<Map<String, String>> fields) {
+        Set<String> methods = new HashSet<>();
+        Set<String> getters = new HashSet<>();
+        for (Map<String, String> field : fields) {
+            String name = field.get("name");
+            String getter = "select" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            if (!methods.add(name) || !getters.add(getter)) {
+                throw new IllegalArgumentException("labels produce duplicate Java methods");
+            }
+            field.put("literal", javaLiteral(name));
+        }
+    }
+
+    private static String javaLiteral(String value) {
+        return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("\r", "\\r").replace("\n", "\\n").replace("\t", "\\t") + "\"";
+    }
+
+    private static void requireIdentifier(String value, String field) {
+        if (value == null || !value.matches("[A-Z][A-Za-z0-9]{0,63}")) {
+            throw new IllegalArgumentException(field + " must be a Java class identifier");
+        }
+    }
+
+    private static Path confined(Path root, String relative) {
+        Path target = root.resolve(relative).normalize();
+        if (!target.startsWith(root)) throw new IllegalArgumentException("generated path escapes output root");
+        return target;
+    }
+
+    private static String render(Template template, Map<String, Object> dataModel) throws Exception {
+        StringWriter writer = new StringWriter();
+        template.process(dataModel, writer);
+        return writer.toString();
+    }
+
+    interface AtomicMover {
+        void move(Path source, Path destination) throws IOException;
+    }
+
+    private static void writeAtomic(Path root, Path target, String value) throws IOException {
+        writeAtomic(root, target, value, (source, destination) -> Files.move(source, destination, StandardCopyOption.ATOMIC_MOVE));
+    }
+
+    static void writeAtomic(Path root, Path target, String value, AtomicMover mover) throws IOException {
+        Files.createDirectories(target.getParent());
+        Path current = root;
+        for (Path segment : root.relativize(target.getParent())) {
+            current = current.resolve(segment);
+            if (Files.isSymbolicLink(current)) throw new IllegalArgumentException("symbolic link path segment rejected");
+        }
+        Path temporary = Files.createTempFile(target.getParent(), ".generated-", ".tmp");
+        try {
+            Files.write(temporary, value.getBytes(StandardCharsets.UTF_8));
+            mover.move(temporary, target);
+        } finally {
+            Files.deleteIfExists(temporary);
         }
     }
 }

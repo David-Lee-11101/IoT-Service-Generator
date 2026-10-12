@@ -54,11 +54,11 @@ private RundetailsMapper rundetailsMapper;
         // 遍历数组，查找 label 为 "${field.name}" 的对象
         for (JsonNode ingredient : ingredientsArray)
           {
-             if ("${field.name}".equals(ingredient.get("label").asText()))
+             if (${field.literal}.equals(ingredient.get("label").asText()))
                  {
                     // 找到了匹配的对象，获取对应的值
                    String relatedValue = ingredient.get("value").asText();
-                   System.out.println("${field.name}: " + relatedValue);
+                   System.out.println(${field.literal} + ": " + relatedValue);
                     return  relatedValue;// 如果找到了就退出循环
                  }
           }
@@ -71,11 +71,11 @@ private RundetailsMapper rundetailsMapper;
         // 遍历数组，查找 label 为 "${field.name}" 的对象
         for (JsonNode ingredient : ingredientsArray)
         {
-        if ("${field.name}".equals(ingredient.get("label").asText()))
+        if (${field.literal}.equals(ingredient.get("label").asText()))
         {
         // 找到了匹配的对象，获取对应的值
         String relatedValue = ingredient.get("value").asText();
-        System.out.println("${field.name}: " + relatedValue);
+        System.out.println(${field.literal} + ": " + relatedValue);
         return  relatedValue;// 如果找到了就退出循环
         }
         }
@@ -88,11 +88,11 @@ private RundetailsMapper rundetailsMapper;
         for (JsonNode outer_ingredient : query_ingredientsArray)
         for (JsonNode ingredient : outer_ingredient)
         {
-        if ("${field.name}".equals(ingredient.get("label").asText()))
+        if (${field.literal}.equals(ingredient.get("label").asText()))
         {
         // 找到了匹配的对象，获取对应的值
         String relatedValue = ingredient.get("value").asText();
-        System.out.println("${field.name}: " + relatedValue);
+        System.out.println(${field.literal} + ": " + relatedValue);
         return  relatedValue;// 如果找到了就退出循环
         }
         }
@@ -104,11 +104,11 @@ private RundetailsMapper rundetailsMapper;
         // 遍历数组，查找 label 为 "${field.name}" 的对象
         for (JsonNode ingredient : ingredientsArray)
         {
-        if ("${field.name}".equals(ingredient.get("label").asText()))
+        if (${field.literal}.equals(ingredient.get("label").asText()))
         {
         // 找到了匹配的对象，获取对应的值
         String relatedValue = ingredient.get("value").asText();
-        System.out.println("${field.name}: " + relatedValue);
+        System.out.println(${field.literal} + ": " + relatedValue);
         return  relatedValue;// 如果找到了就退出循环
         }
         }
